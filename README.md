@@ -10,16 +10,20 @@ These variables will be used throughout the demo.
 ```bash
 
 # This will be used as the name of the RG and cluster
-NAME=cdw-kubernetes-2021222
+NAME=cdw-kubernetes-2021224
 
 # The AKS gitops add-on is only available in a few locations while in preview
-LOCATION=westus2
+LOCATION=eastus2
 
 # This is the AAD Tenant ID
 TENANT_ID=<your-tenant-id>
 
 # This is the Object ID of the AAD Group that will be the Admin owners of the cluster
 GROUP_ID=<your-group-id>
+
+# These are for the PostgreSQL database
+DB_ADMIN=dbadmin
+DB_PWD=<your-password>
 
 ```
 
@@ -30,6 +34,30 @@ GROUP_ID=<your-group-id>
 ```bash
 
 az group create -n $NAME -l $LOCATION
+
+```
+
+### Create a PostgreSQL Server
+```bash
+
+# Create the PostgreSQL Server
+az postgres server create \
+-g $NAME \
+-n $NAME \
+-l $LOCATION \
+--admin-user $DB_ADMIN \
+--admin-password $DB_PWD \
+--version 11 \
+--minimal-tls-version TLS1_2 \
+--public-network-access 0.0.0.0 \
+--sku-name B_Gen5_2
+
+
+--ssl-enforcement Disabled \
+
+
+# Create the PostgreSQL database
+az postgres db create -g $NAME -s $NAME -n airflow
 
 ```
 
