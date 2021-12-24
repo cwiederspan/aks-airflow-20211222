@@ -27,3 +27,10 @@ resource "azurerm_postgresql_flexible_server" "server" {
     ]
   }
 }
+
+resource "azurerm_postgresql_flexible_server_database" "airflow" {
+  name      = "airflow"
+  server_id = azurerm_postgresql_flexible_server.server.id
+  # collation = "en_US.utf8"
+  # charset   = "utf8"
+}

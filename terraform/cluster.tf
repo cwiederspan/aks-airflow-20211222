@@ -25,8 +25,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dns_prefix          = var.base_name
   kubernetes_version  = var.aks_version
 
-  api_server_authorized_ip_ranges = var.authorized_ip_addresses
-
   automatic_channel_upgrade = "patch"
 
   default_node_pool {
@@ -56,7 +54,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
   role_based_access_control {
     enabled = true
 
-    
     azure_active_directory {
       managed            = true
       azure_rbac_enabled = true
@@ -72,6 +69,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     # azure_policy {
     #   enabled = true
     # }
+
+    http_application_routing {
+      enabled = false
+    }
 
     oms_agent {
       enabled                    = true

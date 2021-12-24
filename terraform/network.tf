@@ -27,6 +27,13 @@ resource "azurerm_subnet" "data" {
   }
 }
 
+# resource "azurerm_subnet" "bastion" {
+#   name                 = "AzureBastionSubnet"
+#   resource_group_name  = azurerm_resource_group.group.name
+#   virtual_network_name = azurerm_virtual_network.vnet.name
+#   address_prefixes     = ["10.0.1.0/24"]
+# }
+
 resource "azurerm_private_dns_zone" "postgres" {
   name                = "private.postgres.database.azure.com"
   resource_group_name = azurerm_resource_group.group.name
@@ -51,19 +58,4 @@ resource "azurerm_private_dns_zone_virtual_network_link" "postgres" {
 #   resource_group_name  = azurerm_resource_group.group.name
 #   virtual_network_name = azurerm_virtual_network.vnet.name
 #   address_prefixes     = ["10.0.2.0/24"]
-# }
-
-# resource "azurerm_subnet" "bastion" {
-#   name                 = "bastion-subnet"
-#   resource_group_name  = azurerm_resource_group.group.name
-#   virtual_network_name = azurerm_virtual_network.vnet.name
-#   address_prefixes     = ["10.0.3.0/24"]
-
-#   delegation {
-#     name = "aci-subnet-delegation"
-#     service_delegation {
-#       name    = "Microsoft.ContainerInstance/containerGroups"
-#       actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
-#     }
-#   }
 # }

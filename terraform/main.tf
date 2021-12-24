@@ -50,12 +50,6 @@ variable "aks_admin_group_id" {
   description = "The ID of an AAD group that will be assigned as the AAD Admin for the Kubernetes cluster."
 }
 
-variable "authorized_ip_addresses" {
-  type        = list(string)
-  description = "A list of CIDR block strings that can access the Kubernetes API endpoint."
-  default     = [ ]
-}
-
 variable "dbserver_username" {
   type        = string
   description = "The admin username for the Postgres server."
