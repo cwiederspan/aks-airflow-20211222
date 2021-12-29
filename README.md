@@ -37,6 +37,9 @@ terraform apply \
 -var 'node_count=2' \
 --var-file=secrets.tfvars
 
+# Connect to the AKS cluster
+az aks get-credentials --resource-group cdw-airflowaks-20211224 --name cdw-airflowaks-20211224 --overwrite-existing 
+
 ```
 
 ## Install Airflow
@@ -48,14 +51,15 @@ kubectl create namespace airflow
 helm repo add apache-airflow https://airflow.apache.org
 
 helm install airflow apache-airflow/airflow --namespace airflow \
-  --set postresql.enabled=false \
+  --set postgresql.enabled=false \
   --set pgbouncer.enabled=false \
+  --set data.metadataConnection.host=cdw-airflowaks-20211224.postgres.database.azure.com \
+  --set data.metadataConnection.db=airflow \
   --set data.metadataConnection.user=psqladmin \
   --set data.metadataConnection.pass=YOUR_PASSWORD_HERE \
   --set data.metadataConnection.protocol=postgresql \
-  --set data.metadataConnection.host=cdw-airflowaks-20211224.postgres.database.azure.com \
-  --set data.metadataConnection.port=5432 \
-  --set data.metadataConnection.db=airflow
+  --set data.metadataConnection.sslmode=require \
+  --set data.metadataConnection.port=6432
 
 helm uninstall airflow -n airflow
 
@@ -70,6 +74,7 @@ kubectl run -it --rm --image=busybox busybox -- sh
 kubectl run -it --rm --image=governmentpaas/psql psql
 
 psql -d airflow -h cdw-airflowaks-20211224.postgres.database.azure.com -U psqladmin --password
+psql -d postgresql -h cdw-airflowaks-20211224.postgres.database.azure.com -U psqladmin --password
 
 # List all databases
 \l

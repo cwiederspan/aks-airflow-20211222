@@ -28,6 +28,12 @@ resource "azurerm_postgresql_flexible_server" "server" {
   }
 }
 
+resource "azurerm_postgresql_flexible_server_configuration" "pgbouncer" {
+  server_id = azurerm_postgresql_flexible_server.server.id
+  name      = "pgbouncer.enabled"
+  value     = "true"
+}
+
 resource "azurerm_postgresql_flexible_server_database" "airflow" {
   name      = "airflow"
   server_id = azurerm_postgresql_flexible_server.server.id
