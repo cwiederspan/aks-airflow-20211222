@@ -51,6 +51,7 @@ kubectl create namespace airflow
 helm repo add apache-airflow https://airflow.apache.org
 
 helm install airflow apache-airflow/airflow --namespace airflow \
+  --set config.webserver.expose_config=true \
   --set postgresql.enabled=false \
   --set pgbouncer.enabled=false \
   --set redis.enabled=false \
@@ -61,8 +62,7 @@ helm install airflow apache-airflow/airflow --namespace airflow \
   --set data.metadataConnection.protocol=postgresql \
   --set data.metadataConnection.sslmode=require \
   --set data.metadataConnection.port=6432 \
-  --set data.brokerUrl=rediss://cdw-airflowaks-20211224.redis.cache.windows.net:6380/0 \
-  --set redis.password=YOUR_REDIS_PASSWORD \
+  --set data.brokerUrl=rediss://redis-user:YOUR_REDIS_PASSWORD@cdw-airflowaks-20211224.redis.cache.windows.net:6380/0?ssl_cert_reqs=required \
   --set dags.gitSync.enabled=true \
   --set dags.gitSync.repo=https://github.com/cwiederspan/airflow-sample-dags.git \
   --set dags.gitSync.branch=main \
