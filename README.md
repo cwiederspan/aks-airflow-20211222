@@ -2,93 +2,40 @@
 
 A repository with notes and code for deploying Apache Airflow to Azure Kubernetes.
 
+## Deploy the Azure Resources using Terraform
 
-### Setup Shell Variables
+### Setup
 
-These variables will be used throughout the demo.
+Rename the `secrets-sample.tfvars` file to `secrets.tfvars` and update the values in that file.
+
+### Terraform Init
 
 ```bash
 
-# This will be used as the name of the RG and cluster
-NAME=cdw-kubernetes-2021224
+cd terraform
 
-# The AKS gitops add-on is only available in a few locations while in preview
-LOCATION=eastus2
-
-# This is the AAD Tenant ID
-TENANT_ID=<your-tenant-id>
-
-# This is the Object ID of the AAD Group that will be the Admin owners of the cluster
-GROUP_ID=<your-group-id>
-
-# These are for the PostgreSQL database
-DB_ADMIN=dbadmin
-DB_PWD=<your-password>
+terraform init --backend-config backend-secrets.tfvars
 
 ```
 
-## Azure Resource Setup
-
-### Create an Azure Resource Group
+### Terraform Apply
 
 ```bash
 
-az group create -n $NAME -l $LOCATION
-
-```
-
-### Create a PostgreSQL Server
-```bash
-
-# Create the PostgreSQL Server
-az postgres server create \
--g $NAME \
--n $NAME \
--l $LOCATION \
---admin-user $DB_ADMIN \
---admin-password $DB_PWD \
---version 11 \
---minimal-tls-version TLS1_2 \
---public-network-access 0.0.0.0 \
---sku-name B_Gen5_2
+# Run the plan to see the changes
+terraform plan \
+-var 'base_name=cdw-airflowaks-20211224' \
+-var 'location=eastus2' \
+-var 'node_count=2' \
+--var-file=secrets.tfvars
 
 
---ssl-enforcement Disabled \
-
-
-# Create the PostgreSQL database
-az postgres db create -g $NAME -s $NAME -n airflow
-
-```
-
-### Create an Azure Kubernetes Cluster
-
-```bash
-
-# Create cluster
-az aks create \
---resource-group $NAME \
---name $NAME \
---location $LOCATION \
---kubernetes-version 1.22.4 \
---node-count 1 \
---network-plugin kubenet \
---generate-ssh-keys \
---enable-managed-identity \
---enable-aad \
---enable-azure-rbac \
---aad-tenant-id $TENANT_ID \
---aad-admin-group-object-ids $GROUP_ID \
---auto-upgrade-channel stable \
---enable-cluster-autoscaler \
---min-count 1 \
---max-count 3 \
---node-vm-size Standard_D4s_v3 \
---zones {1,2,3} \
---enable-addons monitoring
-
-# Get credentials and login
-az aks get-credentials -n $NAME -g $NAME --overwrite
+# Apply the script with the specified variable values
+terraform apply \
+-var 'base_name=cdw-airflowaks-20211224' \
+-var 'location=eastus2' \
+-var 'node_count=2' \
+--var-file=secrets.tfvars
 
 ```
 
@@ -97,7 +44,45 @@ az aks get-credentials -n $NAME -g $NAME --overwrite
 ```bash
 
 kubectl create namespace airflow
+
 helm repo add apache-airflow https://airflow.apache.org
-helm install airflow apache-airflow/airflow --namespace airflow
+
+helm install airflow apache-airflow/airflow --namespace airflow \
+  --set postresql.enabled=false \
+  --set pgbouncer.enabled=false \
+  --set data.metadataConnection.user=psqladmin \
+  --set data.metadataConnection.pass=YOUR_PASSWORD_HERE \
+  --set data.metadataConnection.protocol=postgresql \
+  --set data.metadataConnection.host=cdw-airflowaks-20211224.postgres.database.azure.com \
+  --set data.metadataConnection.port=5432 \
+  --set data.metadataConnection.db=airflow
+
+helm uninstall airflow -n airflow
+
+```
+
+## Helpers
+
+```bash
+
+kubectl run -it --rm --image=busybox busybox -- sh
+
+kubectl run -it --rm --image=governmentpaas/psql psql
+
+psql -d airflow -h cdw-airflowaks-20211224.postgres.database.azure.com -U psqladmin --password
+
+# List all databases
+\l
+
+# List all tables
+\dt
+
+SELECT *
+FROM pg_stat_activity
+WHERE datname = 'airflow';
+
+SELECT pg_terminate_backend (pid)
+FROM pg_stat_activity
+WHERE pg_stat_activity.datname = 'airflow';
 
 ```
