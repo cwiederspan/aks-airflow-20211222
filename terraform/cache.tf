@@ -7,7 +7,7 @@ resource "azurerm_redis_cache" "cache" {
   family              = "P"
   sku_name            = "Premium"
   minimum_tls_version = "1.2"
-  enable_non_ssl_port = true        # Open port 6379
+  # enable_non_ssl_port = true        # Open port 6379
 
   public_network_access_enabled = false
 

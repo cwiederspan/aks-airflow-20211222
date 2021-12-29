@@ -53,13 +53,20 @@ helm repo add apache-airflow https://airflow.apache.org
 helm install airflow apache-airflow/airflow --namespace airflow \
   --set postgresql.enabled=false \
   --set pgbouncer.enabled=false \
+  --set redis.enabled=false \
   --set data.metadataConnection.host=cdw-airflowaks-20211224.postgres.database.azure.com \
   --set data.metadataConnection.db=airflow \
   --set data.metadataConnection.user=psqladmin \
-  --set data.metadataConnection.pass=YOUR_PASSWORD_HERE \
+  --set data.metadataConnection.pass=YOUR_PSQL_PASSWORD \
   --set data.metadataConnection.protocol=postgresql \
   --set data.metadataConnection.sslmode=require \
-  --set data.metadataConnection.port=6432
+  --set data.metadataConnection.port=6432 \
+  --set data.brokerUrl=rediss://cdw-airflowaks-20211224.redis.cache.windows.net:6380/0 \
+  --set redis.password=YOUR_REDIS_PASSWORD \
+  --set dags.gitSync.enabled=true \
+  --set dags.gitSync.repo=https://github.com/cwiederspan/airflow-sample-dags.git \
+  --set dags.gitSync.branch=main \
+  --set dags.gitSync.subPath=dags
 
 helm uninstall airflow -n airflow
 
