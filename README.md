@@ -51,6 +51,7 @@ kubectl create namespace airflow
 helm repo add apache-airflow https://airflow.apache.org
 
 helm install airflow apache-airflow/airflow --namespace airflow \
+  --set webserverSecretKey=$(hexdump -n 16 -e '4/4 "%08X" 1 "\n"' /dev/urandom) \
   --set config.webserver.expose_config=true \
   --set postgresql.enabled=false \
   --set pgbouncer.enabled=false \
