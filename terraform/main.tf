@@ -6,9 +6,16 @@ terraform {
   }
 
   required_providers {
-    
     azurerm = {
       version = "~> 2.90"
+    }
+    
+    kubernetes = {
+      version = "~> 2.7"
+    }
+
+    random = {
+      version = "~> 3.1"
     }
   }
 }
@@ -64,4 +71,13 @@ variable "dbserver_password" {
 resource "azurerm_resource_group" "group" {
   name     = var.base_name
   location = var.location
+}
+
+resource "random_id" "server" {
+  byte_length = 8
+}
+
+resource "random_string" "webserverkey" {
+  length           = 16
+  special          = false
 }

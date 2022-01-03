@@ -34,8 +34,15 @@ resource "azurerm_postgresql_flexible_server_configuration" "pgbouncer" {
   value     = "true"
 }
 
-resource "azurerm_postgresql_flexible_server_database" "airflow" {
-  name      = "airflow"
+resource "azurerm_postgresql_flexible_server_database" "metadata" {
+  name      = "airflow_metadata"
+  server_id = azurerm_postgresql_flexible_server.server.id
+  # collation = "en_US.utf8"
+  # charset   = "utf8"
+}
+
+resource "azurerm_postgresql_flexible_server_database" "results" {
+  name      = "airflow_results"
   server_id = azurerm_postgresql_flexible_server.server.id
   # collation = "en_US.utf8"
   # charset   = "utf8"
