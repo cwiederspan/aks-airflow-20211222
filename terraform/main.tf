@@ -11,6 +11,7 @@ terraform {
     }
     
     kubernetes = {
+      source  = "hashicorp/kubernetes"
       version = "~> 2.7"
     }
 
@@ -73,11 +74,11 @@ resource "azurerm_resource_group" "group" {
   location = var.location
 }
 
-resource "random_id" "server" {
-  byte_length = 8
-}
+# resource "random_id" "server" {
+#   byte_length = 8
+# }
 
-resource "random_string" "webserverkey" {
-  length           = 16
-  special          = false
-}
+# resource "random_string" "webserverkey" {
+#   length           = 16
+#   special          = false
+# }

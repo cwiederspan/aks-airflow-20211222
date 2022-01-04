@@ -56,21 +56,9 @@ helm install airflow apache-airflow/airflow --namespace airflow \
   --set postgresql.enabled=false \
   --set pgbouncer.enabled=false \
   --set redis.enabled=false \
-  --set data.metadataConnection.host=cdw-airflowaks-20211224.postgres.database.azure.com \
-  --set data.metadataConnection.db=airflow_metadata \
-  --set data.metadataConnection.user=psqladmin \
-  --set data.metadataConnection.pass=YOUR_PSQL_PASSWORD \
-  --set data.metadataConnection.protocol=postgresql \
-  --set data.metadataConnection.sslmode=require \
-  --set data.metadataConnection.port=6432 \
-  --set data.resultBackendConnection.host=cdw-airflowaks-20211224.postgres.database.azure.com \
-  --set data.resultBackendConnection.db=airflow_results \
-  --set data.resultBackendConnection.user=psqladmin \
-  --set data.resultBackendConnection.pass=YOUR_PSQL_PASSWORD \
-  --set data.resultBackendConnection.sslmode=require \
-  --set data.resultBackendConnection.protocol=postgresql \
-  --set data.resultBackendConnection.port=6432 \
-  --set data.brokerUrl=rediss://redis-user:YOUR_REDIS_PASSWORD@cdw-airflowaks-20211224.redis.cache.windows.net:6380/0?ssl_cert_reqs=required \
+  --set data.metadataSecretName=airflow-connection-metadata \
+  --set data.resultBackendSecretName=airflow-connection-results \
+  --set data.brokerUrlSecretName=airflow-redis-connection \
   --set dags.gitSync.enabled=true \
   --set dags.gitSync.repo=https://github.com/cwiederspan/airflow-sample-dags.git \
   --set dags.gitSync.branch=main \
