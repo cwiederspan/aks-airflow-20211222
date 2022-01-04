@@ -67,6 +67,12 @@ variable "dbserver_username" {
 variable "dbserver_password" {
   type        = string
   description = "The admin password for the Postgres server."
+  nullable    = true
+  default     = null
+}
+
+locals {
+  database_password = coalesce(var.dbserver_password, random_string.database_password.result)
 }
 
 resource "azurerm_resource_group" "group" {
@@ -74,9 +80,14 @@ resource "azurerm_resource_group" "group" {
   location = var.location
 }
 
-# resource "random_id" "server" {
-#   byte_length = 8
-# }
+resource "random_id" "server" {
+  byte_length = 8
+}
+
+resource "random_string" "database_password" {
+  length  = 16
+  special = false
+}
 
 # resource "random_string" "webserverkey" {
 #   length           = 16

@@ -9,7 +9,7 @@ resource "azurerm_postgresql_flexible_server" "server" {
   private_dns_zone_id    = azurerm_private_dns_zone.postgres.id
 
   administrator_login    = var.dbserver_username
-  administrator_password = var.dbserver_password
+  administrator_password = local.database_password
   # zone                   = "1"
 
   storage_mb = 32768

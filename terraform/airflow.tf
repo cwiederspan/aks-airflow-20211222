@@ -21,7 +21,7 @@ resource "kubernetes_secret" "backend_metadata" {
      namespace = kubernetes_namespace.airflow.metadata.0.name
    }
    data = {
-      connection = "postgresql://${var.dbserver_username}:${var.dbserver_password}@${azurerm_postgresql_flexible_server.server.fqdn}:6432/${azurerm_postgresql_flexible_server_database.metadata.name}?sslmode=require"
+      connection = "postgresql://${var.dbserver_username}:${local.database_password}@${azurerm_postgresql_flexible_server.server.fqdn}:6432/${azurerm_postgresql_flexible_server_database.metadata.name}?sslmode=require"
    }
    type = "Opaque"
 }
@@ -33,7 +33,7 @@ resource "kubernetes_secret" "backend_results" {
      namespace = kubernetes_namespace.airflow.metadata.0.name
    }
    data = {
-      connection = "db+postgresql://${var.dbserver_username}:${var.dbserver_password}@${azurerm_postgresql_flexible_server.server.fqdn}:6432/${azurerm_postgresql_flexible_server_database.results.name}?sslmode=require"
+      connection = "db+postgresql://${var.dbserver_username}:${local.database_password}@${azurerm_postgresql_flexible_server.server.fqdn}:6432/${azurerm_postgresql_flexible_server_database.results.name}?sslmode=require"
    }
    type = "Opaque"
 }

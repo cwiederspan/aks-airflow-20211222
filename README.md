@@ -76,8 +76,8 @@ kubectl run -it --rm --image=busybox busybox -- sh
 
 kubectl run -it --rm --image=governmentpaas/psql psql
 
-psql -d airflow -h cdw-airflowaks-20211224.postgres.database.azure.com -U psqladmin --password
-psql -d postgresql -h cdw-airflowaks-20211224.postgres.database.azure.com -U psqladmin --password
+psql -d airflow_metadata -h cdw-airflowaks-20211224.postgres.database.azure.com -U psqladmin --password
+psql -d postgres -h cdw-airflowaks-20211224.postgres.database.azure.com -U psqladmin --password
 
 # List all databases
 \l
