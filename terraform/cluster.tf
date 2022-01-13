@@ -78,15 +78,25 @@ resource "azurerm_kubernetes_cluster" "aks" {
       enabled                    = true
       log_analytics_workspace_id = azurerm_log_analytics_workspace.workspace.id
     }
+
+    ingress_application_gateway {
+      enabled      = true
+      gateway_name = var.base_name
+      subnet_id    = azurerm_subnet.gateway.id
+    }
   }
 
-  network_profile {
-    network_plugin     = "azure"
-    service_cidr       = "172.16.0.0/16"
-    dns_service_ip     = "172.16.0.10"
-    docker_bridge_cidr = "172.24.0.1/16"
+  # network_profile {
+  #   network_plugin     = "azure"
+  #   service_cidr       = "172.16.0.0/16"
+  #   dns_service_ip     = "172.16.0.10"
+  #   docker_bridge_cidr = "172.24.0.1/16"
 
-    #network_policy     = "calico"
+  #   #network_policy     = "calico"
+  # }
+
+  network_profile {
+    network_plugin = "kubenet"
   }
 
   # lifecycle {
