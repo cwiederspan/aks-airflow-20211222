@@ -79,3 +79,26 @@ resource "azurerm_private_dns_zone_virtual_network_link" "postgres" {
 #   virtual_network_name = azurerm_virtual_network.vnet.name
 #   address_prefixes     = ["10.0.2.0/24"]
 # }
+
+
+// NOTE: Because we're using Kubenet for the cluster, and also using AGIC, we need to
+// associate the cluster's route table with the gateway subnet, too. To do this, we can
+// create the route table first, and then assign it to both subnets instea of letting 
+// AKS create the route table for us.
+resource "azurerm_route_table" "aks" {
+  name                = "aks-agentpool-routetable"
+  resource_group_name = azurerm_resource_group.group.name
+  location            = azurerm_resource_group.group.location
+
+  disable_bgp_route_propagation = false
+}
+
+resource "azurerm_subnet_route_table_association" "cluster" {
+  subnet_id      = azurerm_subnet.cluster.id
+  route_table_id = azurerm_route_table.aks.id
+}
+
+resource "azurerm_subnet_route_table_association" "gateway" {
+  subnet_id      = azurerm_subnet.gateway.id
+  route_table_id = azurerm_route_table.aks.id
+}

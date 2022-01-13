@@ -72,6 +72,8 @@ helm uninstall airflow -n airflow
 
 ```bash
 
+kubectl port-forward svc/airflow-webserver 8080:8080 --namespace airflow
+
 kubectl run -it --rm --image=busybox busybox -- sh
 
 kubectl run -it --rm --image=governmentpaas/psql psql
