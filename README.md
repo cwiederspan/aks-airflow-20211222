@@ -58,7 +58,7 @@ helm install airflow apache-airflow/airflow --namespace airflow \
   --set redis.enabled=false \
   --set data.metadataSecretName=airflow-connection-metadata \
   --set data.resultBackendSecretName=airflow-connection-results \
-  --set data.brokerUrlSecretName=airflow-redis-connection \
+  --set data.brokerUrlSecretName=airflow-connection-redis \
   --set dags.gitSync.enabled=true \
   --set dags.gitSync.repo=https://github.com/cwiederspan/airflow-sample-dags.git \
   --set dags.gitSync.branch=main \

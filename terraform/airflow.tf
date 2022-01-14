@@ -40,7 +40,7 @@ resource "kubernetes_secret" "backend_results" {
 
 resource "kubernetes_secret" "redis_connection" {
    metadata {
-     name = "airflow-redis-connection"
+     name = "airflow-connection-redis"
      namespace = kubernetes_namespace.airflow.metadata.0.name
    }
    data = {
