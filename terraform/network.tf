@@ -87,32 +87,23 @@ resource "azurerm_private_dns_zone_virtual_network_link" "postgres" {
 // associate the cluster's route table with the gateway subnet, too. To do this, we can
 // create the route table first, and then assign it to both subnets instea of letting 
 // AKS create the route table for us.
-# resource "azurerm_route_table" "aks" {
-#   name                = "aks-agentpool-routetable"
-#   resource_group_name = azurerm_resource_group.group.name
-#   location            = azurerm_resource_group.group.location
-#
-#   disable_bgp_route_propagation = false
-# }
-
-# resource "azurerm_subnet_route_table_association" "cluster" {
-#   subnet_id      = azurerm_subnet.cluster.id
-#   route_table_id = azurerm_route_table.aks.id
-# }
-
-# resource "azurerm_subnet_route_table_association" "gateway" {
-#   subnet_id      = azurerm_subnet.gateway.id
-#   route_table_id = azurerm_route_table.aks.id
-# }
-
+// https://docs.microsoft.com/en-us/azure/aks/configure-kubenet#bring-your-own-subnet-and-route-table-with-kubenet
 
 data "azurerm_subnet" "cluster" {
   resource_group_name  = azurerm_resource_group.group.name
   name                 = azurerm_subnet.cluster.name
   virtual_network_name = azurerm_virtual_network.vnet.name
+
+  depends_on = [
+    azurerm_kubernetes_cluster.aks
+  ]
 }
 
 resource "azurerm_subnet_route_table_association" "gateway" {
   subnet_id      = azurerm_subnet.gateway.id
   route_table_id = data.azurerm_subnet.cluster.route_table_id
+
+  depends_on = [
+    azurerm_kubernetes_cluster.aks
+  ]
 }
