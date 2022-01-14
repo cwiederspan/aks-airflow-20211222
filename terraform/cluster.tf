@@ -104,7 +104,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   # }
 
   depends_on = [
-    azurerm_role_assignment.make_aks_kubelet_id_contributor
+    azurerm_role_assignment.make_aks_kubelet_id_contributor #,
+    # azurerm_role_assignment.route_table_contributor,
+    # azurerm_subnet_route_table_association.cluster #,           // Make sure the route table is associated before starting the cluster
+    # azurerm_subnet_route_table_association.gateway            // Not really needed, but nice to have
   ]
 }
 
@@ -124,3 +127,12 @@ resource "azurerm_role_assignment" "make_aks_kubelet_id_contributor" {
   role_definition_name = "Contributor"
   principal_id         = azurerm_user_assigned_identity.cplane.principal_id
 }
+
+// Because we're using a bring your own route table with kubenet, we need to make sure the kubelet
+// identity has Network Contributor rights to that route table.
+// https://docs.microsoft.com/en-us/azure/aks/configure-kubenet#bring-your-own-subnet-and-route-table-with-kubenet
+# resource "azurerm_role_assignment" "route_table_contributor" {
+#   scope                = azurerm_route_table.aks.id
+#   role_definition_name = "Network Contributor"
+#   principal_id         = azurerm_user_assigned_identity.cplane.principal_id
+# }
